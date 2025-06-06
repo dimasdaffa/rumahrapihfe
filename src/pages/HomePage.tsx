@@ -1,6 +1,72 @@
+import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
+import type { Category, HomeService } from "../types/type";
+import apiClient from "../services/apiServices";
+
+const fetchCategories = async () => {
+  const response = await apiClient.get("/categories"); // Assuming the API returns an array of Category
+  return response.data.data; // Adjust if API response structure is different (e.g., response.data)
+};
+
+const fetchServices = async () => {
+  const response = await apiClient.get("/services?limit=5&is_popular=1"); // Assuming the API returns an array of HomeService
+  return response.data.data; // Adjust if API response structure is different
+};
 
 export default function HomePage() {
+  const [categories, setCategories] = useState<Category[]>([]); // Cannot find name 'Category'.
+  const [services, setServices] = useState<HomeService[]>([]); // Assuming HomeService is defined.
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [loadingServices, setLoadingServices] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getCategoriesData = async () => {
+      try {
+        const categoriesData = await fetchCategories();
+        setCategories(categoriesData);
+      } catch (err) {
+        setError("Failed to load categories");
+        // console.error("Failed to fetch categories:", err); // Optional: for debugging
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    const getServicesData = async () => {
+      try {
+        const servicesData = await fetchServices();
+        setServices(servicesData);
+      } catch (err) {
+        setError("Failed to load services");
+        // console.error("Failed to fetch services:", err); // Optional: for debugging
+      } finally {
+        setLoadingServices(false);
+      }
+    };
+
+    getCategoriesData();
+    getServicesData();
+  }, []);
+
+  if (loadingCategories && loadingServices) {
+    return <p>Loading categories and services...</p>;
+  }
+
+  if (error) {
+    return <p>Error loading data: {error}</p>;
+  }
+  // Format currency to IDR
+  const formatCurrency = (value: number): string => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+  const BASE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
+
   return (
     <main className="relative mx-auto w-full max-w-[640px] overflow-hidden bg-white pb-[142px]">
       <div id="Background" className="absolute left-0 right-0 top-0">
@@ -65,120 +131,32 @@ export default function HomePage() {
             slidesOffsetAfter={20}
             slidesOffsetBefore={20}
           >
-            <SwiperSlide className="swiper-slide !w-fit">
-              <a href="category.html" className="card">
-                <div className="shrink-0 space-y-3 rounded-[24px] border border-x-rumahrapih-graylight bg-white py-4 text-center transition-all duration-300 hover:border-rumahrapih-orange">
-                  <div className="mx-auto flex h-[70px] w-[70px] shrink-0 items-center justify-center overflow-hidden rounded-full">
-                    <img
-                      src="assets/images/icons/living-room.svg"
-                      alt="icon"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex min-w-[130px] flex-col gap-[2px]">
-                    <h3 className="font-semibold">Living Room</h3>
-                    <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                      1,353 Services
-                    </p>
-                  </div>
-                </div>
-              </a>
-            </SwiperSlide>
-            <SwiperSlide className="swiper-slide !w-fit">
-              <a href="category.html" className="card">
-                <div className="shrink-0 space-y-3 rounded-[24px] border border-x-rumahrapih-graylight bg-white py-4 text-center transition-all duration-300 hover:border-rumahrapih-orange">
-                  <div className="mx-auto flex h-[70px] w-[70px] shrink-0 items-center justify-center overflow-hidden rounded-full">
-                    <img
-                      src="assets/images/icons/kitchens.svg"
-                      alt="icon"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex min-w-[130px] flex-col gap-[2px]">
-                    <h3 className="font-semibold">Kitchens</h3>
-                    <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                      1,353 Services
-                    </p>
-                  </div>
-                </div>
-              </a>
-            </SwiperSlide>
-            <SwiperSlide className="swiper-slide !w-fit">
-              <a href="category.html" className="card">
-                <div className="shrink-0 space-y-3 rounded-[24px] border border-x-rumahrapih-graylight bg-white py-4 text-center transition-all duration-300 hover:border-rumahrapih-orange">
-                  <div className="mx-auto flex h-[70px] w-[70px] shrink-0 items-center justify-center overflow-hidden rounded-full">
-                    <img
-                      src="assets/images/icons/gardens.svg"
-                      alt="icon"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex min-w-[130px] flex-col gap-[2px]">
-                    <h3 className="font-semibold">Gardens</h3>
-                    <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                      1,353 Services
-                    </p>
-                  </div>
-                </div>
-              </a>
-            </SwiperSlide>
-            <SwiperSlide className="swiper-slide !w-fit">
-              <a href="category.html" className="card">
-                <div className="shrink-0 space-y-3 rounded-[24px] border border-x-rumahrapih-graylight bg-white py-4 text-center transition-all duration-300 hover:border-rumahrapih-orange">
-                  <div className="mx-auto flex h-[70px] w-[70px] shrink-0 items-center justify-center overflow-hidden rounded-full">
-                    <img
-                      src="assets/images/icons/security.svg"
-                      alt="icon"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex min-w-[130px] flex-col gap-[2px]">
-                    <h3 className="font-semibold">Security</h3>
-                    <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                      1,353 Services
-                    </p>
-                  </div>
-                </div>
-              </a>
-            </SwiperSlide>
-            <SwiperSlide className="swiper-slide !w-fit">
-              <a href="category.html" className="card">
-                <div className="shrink-0 space-y-3 rounded-[24px] border border-x-rumahrapih-graylight bg-white py-4 text-center transition-all duration-300 hover:border-rumahrapih-orange">
-                  <div className="mx-auto flex h-[70px] w-[70px] shrink-0 items-center justify-center overflow-hidden rounded-full">
-                    <img
-                      src="assets/images/icons/recreation.svg"
-                      alt="icon"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex min-w-[130px] flex-col gap-[2px]">
-                    <h3 className="font-semibold">Recreation</h3>
-                    <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                      1,353 Services
-                    </p>
-                  </div>
-                </div>
-              </a>
-            </SwiperSlide>
-            <SwiperSlide className="swiper-slide !w-fit">
-              <a href="category.html" className="card">
-                <div className="shrink-0 space-y-3 rounded-[24px] border border-x-rumahrapih-graylight bg-white py-4 text-center transition-all duration-300 hover:border-rumahrapih-orange">
-                  <div className="mx-auto flex h-[70px] w-[70px] shrink-0 items-center justify-center overflow-hidden rounded-full">
-                    <img
-                      src="assets/images/icons/storages.svg"
-                      alt="icon"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex min-w-[130px] flex-col gap-[2px]">
-                    <h3 className="font-semibold">Storages</h3>
-                    <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                      1,353 Services
-                    </p>
-                  </div>
-                </div>
-              </a>
-            </SwiperSlide>
+            {categories.length > 0
+              ? categories.map((category) => (
+                  <SwiperSlide
+                    key={category.id}
+                    className="swiper-slide !w-fit"
+                  >
+                    <a href="category.html" className="card">
+                      <div className="shrink-0 space-y-3 rounded-[24px] border border-x-rumahrapih-graylight bg-white py-4 text-center transition-all duration-300 hover:border-rumahrapih-orange">
+                        <div className="mx-auto flex h-[70px] w-[70px] shrink-0 items-center justify-center overflow-hidden rounded-full">
+                          <img
+                            src={`${BASE_URL}/${category.photo}`}
+                            alt="icon"
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div className="flex min-w-[130px] flex-col gap-[2px]">
+                          <h3 className="font-semibold">{category.name}</h3>
+                          <p className="text-sm leading-[21px] text-rumahrapih-gray">
+                            {category.home_services_count} Services
+                          </p>
+                        </div>
+                      </div>
+                    </a>
+                  </SwiperSlide>
+                ))
+              : "Belum ada kategori yang ditampilkan"}
           </Swiper>
         </div>
       </section>
@@ -203,222 +181,67 @@ export default function HomePage() {
             slidesOffsetAfter={20}
             slidesOffsetBefore={20}
           >
-            <SwiperSlide className="swiper-slide !w-fit">
-              <a href="service-details.html" className="card">
-                <div className="relative flex w-[230px] shrink-0 flex-col gap-[12px] overflow-hidden rounded-[24px] border border-rumahrapih-graylight bg-white p-4 transition-all duration-300 hover:border-rumahrapih-orange">
-                  <span className="absolute right-[26px] top-[26px] shrink-0 rounded-full bg-white px-2 py-[7px]">
-                    <div className="flex items-center gap-[2px]">
-                      <img src="assets/images/icons/star.svg" alt="icon" />
-                      <p className="text-xs font-semibold leading-[18px]">
-                        4.8
-                      </p>
-                    </div>
-                  </span>
-                  <div className="flex h-[140px] w-full shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#D9D9D9]">
-                    <img
-                      src="assets/images/thumbnails/watchtv-medium.png"
-                      alt="image"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <h3 className="line-clamp-2 min-h-[48px] font-semibold">
-                    Home Family Theater Best Lights Installation
-                  </h3>
-                  <div className="flex flex-col gap-y-3">
-                    <div className="flex items-center gap-2">
-                      <img
-                        src="assets/images/icons/date.svg"
-                        alt="icon"
-                        className="h-5 w-5 shrink-0"
-                      />
-                      <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                        Living Room
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <img
-                        src="assets/images/icons/clock.svg"
-                        alt="icon"
-                        className="h-5 w-5 shrink-0"
-                      />
-                      <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                        15 Hours
-                      </p>
-                    </div>
-                    <strong className="font-semibold text-rumahrapih-orange">
-                      Rp 8.560.392
-                    </strong>
-                    <img
-                      className="absolute bottom-0 right-0"
-                      src="assets/images/backgrounds/decoration.svg"
-                      alt="icon"
-                    />
-                  </div>
-                </div>
-              </a>
-            </SwiperSlide>
-            <SwiperSlide className="swiper-slide !w-fit">
-              <a href="service-details.html" className="card">
-                <div className="relative flex w-[230px] shrink-0 flex-col gap-[12px] overflow-hidden rounded-[24px] border border-rumahrapih-graylight bg-white p-4 transition-all duration-300 hover:border-rumahrapih-orange">
-                  <span className="absolute right-[26px] top-[26px] shrink-0 rounded-full bg-white px-2 py-[7px]">
-                    <div className="flex items-center gap-[2px]">
-                      <img src="assets/images/icons/star.svg" alt="icon" />
-                      <p className="text-xs font-semibold leading-[18px]">
-                        4.8
-                      </p>
-                    </div>
-                  </span>
-                  <div className="flex h-[140px] w-full shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#D9D9D9]">
-                    <img
-                      src="assets/images/thumbnails/swim-medium.png"
-                      alt="image"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <h3 className="line-clamp-2 min-h-[48px] font-semibold">
-                    Mini Swim Pool and Kids Soccer Fields Grass
-                  </h3>
-                  <div className="flex flex-col gap-y-3">
-                    <div className="flex items-center gap-2">
-                      <img
-                        src="assets/images/icons/date.svg"
-                        alt="icon"
-                        className="h-5 w-5 shrink-0"
-                      />
-                      <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                        Recreation
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <img
-                        src="assets/images/icons/clock.svg"
-                        alt="icon"
-                        className="h-5 w-5 shrink-0"
-                      />
-                      <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                        15 Hours
-                      </p>
-                    </div>
-                    <strong className="font-semibold text-rumahrapih-orange">
-                      Rp 8.560.392
-                    </strong>
-                    <img
-                      className="absolute bottom-0 right-0"
-                      src="assets/images/backgrounds/decoration.svg"
-                      alt="icon"
-                    />
-                  </div>
-                </div>
-              </a>
-            </SwiperSlide>
-            <SwiperSlide className="swiper-slide !w-fit">
-              <a href="service-details.html" className="card">
-                <div className="relative flex w-[230px] shrink-0 flex-col gap-[12px] overflow-hidden rounded-[24px] border border-rumahrapih-graylight bg-white p-4 transition-all duration-300 hover:border-rumahrapih-orange">
-                  <span className="absolute right-[26px] top-[26px] shrink-0 rounded-full bg-white px-2 py-[7px]">
-                    <div className="flex items-center gap-[2px]">
-                      <img src="assets/images/icons/star.svg" alt="icon" />
-                      <p className="text-xs font-semibold leading-[18px]">
-                        4.8
-                      </p>
-                    </div>
-                  </span>
-                  <div className="flex h-[140px] w-full shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#D9D9D9]">
-                    <img
-                      src="assets/images/thumbnails/gardening-medium.png"
-                      alt="image"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <h3 className="line-clamp-2 min-h-[48px] font-semibold">
-                    Rumah Kaca Garden Zen Cactus Bonsai Zen
-                  </h3>
-                  <div className="flex flex-col gap-y-3">
-                    <div className="flex items-center gap-2">
-                      <img
-                        src="assets/images/icons/date.svg"
-                        alt="icon"
-                        className="h-5 w-5 shrink-0"
-                      />
-                      <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                        Gardens
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <img
-                        src="assets/images/icons/clock.svg"
-                        alt="icon"
-                        className="h-5 w-5 shrink-0"
-                      />
-                      <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                        15 Hours
-                      </p>
-                    </div>
-                    <strong className="font-semibold text-rumahrapih-orange">
-                      Rp 8.560.392
-                    </strong>
-                    <img
-                      className="absolute bottom-0 right-0"
-                      src="assets/images/backgrounds/decoration.svg"
-                      alt="icon"
-                    />
-                  </div>
-                </div>
-              </a>
-            </SwiperSlide>
-            <SwiperSlide className="swiper-slide !w-fit">
-              <a href="service-details.html" className="card">
-                <div className="relative flex w-[230px] shrink-0 flex-col gap-[12px] overflow-hidden rounded-[24px] border border-rumahrapih-graylight bg-white p-4 transition-all duration-300 hover:border-rumahrapih-orange">
-                  <span className="absolute right-[26px] top-[26px] shrink-0 rounded-full bg-white px-2 py-[7px]">
-                    <div className="flex items-center gap-[2px]">
-                      <img src="assets/images/icons/star.svg" alt="icon" />
-                      <p className="text-xs font-semibold leading-[18px]">
-                        4.8
-                      </p>
-                    </div>
-                  </span>
-                  <div className="flex h-[140px] w-full shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#D9D9D9]">
-                    <img
-                      src="assets/images/thumbnails/press-medium.png"
-                      alt="image"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <h3 className="line-clamp-2 min-h-[48px] font-semibold">
-                    AI House Security Max Secure within Apps
-                  </h3>
-                  <div className="flex flex-col gap-y-3">
-                    <div className="flex items-center gap-2">
-                      <img
-                        src="assets/images/icons/date.svg"
-                        alt="icon"
-                        className="h-5 w-5 shrink-0"
-                      />
-                      <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                        Security
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <img
-                        src="assets/images/icons/clock.svg"
-                        alt="icon"
-                        className="h-5 w-5 shrink-0"
-                      />
-                      <p className="text-sm leading-[21px] text-rumahrapih-gray">
-                        15 Hours
-                      </p>
-                    </div>
-                    <strong className="font-semibold text-rumahrapih-orange">
-                      Rp 8.560.392
-                    </strong>
-                    <img
-                      className="absolute bottom-0 right-0"
-                      src="assets/images/backgrounds/decoration.svg"
-                      alt="icon"
-                    />
-                  </div>
-                </div>
-              </a>
-            </SwiperSlide>
+            {services.length > 0
+              ? services.map((service) => (
+                  <SwiperSlide key={service.id} className="swiper-slide !w-fit">
+                    <a href="service-details.html" className="card">
+                      <div className="relative flex w-[230px] shrink-0 flex-col gap-[12px] overflow-hidden rounded-[24px] border border-rumahrapih-graylight bg-white p-4 transition-all duration-300 hover:border-rumahrapih-orange">
+                        <span className="absolute right-[26px] top-[26px] shrink-0 rounded-full bg-white px-2 py-[7px]">
+                          <div className="flex items-center gap-[2px]">
+                            <img
+                              src="assets/images/icons/star.svg"
+                              alt="icon"
+                            />
+                            <p className="text-xs font-semibold leading-[18px]">
+                              4.8
+                            </p>
+                          </div>
+                        </span>
+                        <div className="flex h-[140px] w-full shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#D9D9D9]">
+                          <img
+                            src={`${BASE_URL}/${service.thumbnail}`}
+                            alt="image"
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <h3 className="line-clamp-2 min-h-[48px] font-semibold">
+                          {service.name}
+                        </h3>
+                        <div className="flex flex-col gap-y-3">
+                          <div className="flex items-center gap-2">
+                            <img
+                              src="assets/images/icons/date.svg"
+                              alt="icon"
+                              className="h-5 w-5 shrink-0"
+                            />
+                            <p className="text-sm leading-[21px] text-rumahrapih-gray">
+                              {service.category.name}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <img
+                              src="assets/images/icons/clock.svg"
+                              alt="icon"
+                              className="h-5 w-5 shrink-0"
+                            />
+                            <p className="text-sm leading-[21px] text-rumahrapih-gray">
+                              {service.duration} hours
+                            </p>
+                          </div>
+                          <strong className="font-semibold text-rumahrapih-orange">
+                            {formatCurrency(service.price)}
+                          </strong>
+                          <img
+                            className="absolute bottom-0 right-0"
+                            src="assets/images/backgrounds/decoration.svg"
+                            alt="icon"
+                          />
+                        </div>
+                      </div>
+                    </a>
+                  </SwiperSlide>
+                ))
+              : "Belum ada services yang ditampilkan"}
           </Swiper>
         </div>
       </section>
