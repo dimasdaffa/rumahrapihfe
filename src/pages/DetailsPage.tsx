@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import type { HomeService } from "../types/type";
+import type { CartItem, HomeService } from "../types/type";
 import apiClient from "../services/apiServices";
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -10,6 +10,28 @@ export default function DetailsPage() {
   const [service, setService] = useState<HomeService | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isAdding, setIsAdding] = useState(false); // Used to track if an item is currently being added to cart
+
+  const [isScrolled, setIsScrolled] = useState(false); // Track if the user has scrolled
+
+  // Load cart from local storage on page load
+  useEffect(() => {
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     if (slug) {
@@ -27,6 +49,31 @@ export default function DetailsPage() {
         });
     }
   }, [slug]); // Depend on slug so it refetches if slug changes
+
+  const handleAddToCart = () => {
+    if (service) {
+      // Ensure service data is loaded
+      setIsAdding(true);
+      const itemExists = cart.find((item) => item.service_id === service.id);
+
+      if (itemExists) {
+        alert("Jasa sudah tersedia di Cart!"); // "Service is already in Cart!"
+        setIsAdding(false);
+      } else {
+        const newCartItem: CartItem = {
+          service_id: service.id,
+          slug: service.slug,
+          quantity: 1, // Default quantity
+        };
+        const updatedCart = [...cart, newCartItem];
+        setCart(updatedCart);
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+        alert("Jasa berhasil ditambahkan ke Cart!"); // "Service successfully added to Cart!"
+        setIsAdding(false);
+      }
+    }
+  };
 
   const BASE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
 
@@ -60,17 +107,24 @@ export default function DetailsPage() {
       </div>
       <section
         id="NavTop"
-        className="fixed left-0 right-0 top-[16px] z-30 transition-all duration-300"
+        className={`fixed left-0 right-0 z-30 transition-all duration-300 
+          ${isScrolled ? "top-[30px]" : "top-[16px]"}`}
       >
         <div className="relative mx-auto max-w-[640px] px-5">
           <div
             id="ContainerNav"
-            className="flex items-center justify-between py-[14px] transition-all duration-300"
+            className={`flex items-center justify-between py-[14px] transition-all duration-300 
+              ${
+                isScrolled
+                  ? "bg-white rounded-[22px] px-[16px] shadow-[0px_12px_20px_0px_#0305041C]"
+                  : ""
+              }`}
           >
             <a href="category.html">
               <div
                 id="Back"
-                className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white"
+                className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white
+                  ${isScrolled ? "border border-rumahrapih-graylight" : ""}`}
               >
                 <img
                   src="/assets/images/icons/back.svg"
@@ -81,14 +135,16 @@ export default function DetailsPage() {
             </a>
             <h2
               id="Title"
-              className="font-semibold text-white transition-all duration-300"
+              className={`font-semibold transition-all duration-300
+                ${isScrolled ? "" : "text-white"}`}
             >
               Details
             </h2>
             <a href="#">
               <div
                 id="Cart"
-                className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white"
+                className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white
+                  ${isScrolled ? "border border-rumahrapih-graylight" : ""}`}
               >
                 <img
                   src="/assets/images/icons/cart.svg"
@@ -308,11 +364,15 @@ export default function DetailsPage() {
                 Refund Guarantee
               </p>
             </div>
-            <a href="my-cart.html" className="w-full">
+            <button
+              onClick={handleAddToCart}
+              disabled={isAdding}
+              className="w-full"
+            >
               <p className="w-full rounded-full bg-rumahrapih-orange px-[18px] py-[14px] text-center font-semibold text-white transition-all duration-300 hover:shadow-[0px_4px_10px_0px_#D04B1E80]">
-                Add to Cart
+                {isAdding ? "Adding..." : "Add to Cart"}
               </p>
-            </a>
+            </button>
           </div>
         </div>
       </nav>
