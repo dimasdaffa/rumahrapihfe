@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import type { CartItem, HomeService } from "../types/type";
 import apiClient from "../services/apiServices";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -120,7 +120,7 @@ export default function DetailsPage() {
                   : ""
               }`}
           >
-            <a href="category.html">
+            <Link to={`/`}>
               <div
                 id="Back"
                 className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white
@@ -132,7 +132,7 @@ export default function DetailsPage() {
                   className="h-[22px] w-[22px] shrink-0"
                 />
               </div>
-            </a>
+            </Link>
             <h2
               id="Title"
               className={`font-semibold transition-all duration-300
@@ -140,7 +140,7 @@ export default function DetailsPage() {
             >
               Details
             </h2>
-            <a href="#">
+            <Link to={`/cart`}>
               <div
                 id="Cart"
                 className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white
@@ -152,7 +152,7 @@ export default function DetailsPage() {
                   className="h-[22px] w-[22px] shrink-0"
                 />
               </div>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
