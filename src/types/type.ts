@@ -50,11 +50,12 @@ export interface BookingDetails {
   started_time: string;
   schedule_at: string;
   transaction_details: TransactionDetails[]; // This implies an array of TransactionDetails
+  proof: string | null; // Assuming this is a URL or path to the proof of payment
 }
 
 interface TransactionDetails {
   id: number;
-  price: string; // This might be a number if it's a monetary value. Adjust if necessary.
+  price: number; // This might be a number if it's a monetary value. Adjust if necessary.
   home_service_id: number;
   home_service: HomeService; // Assuming HomeService interface is defined elsewhere
 }

@@ -279,14 +279,6 @@ export default function MyCartPage() {
             </div> */}
           </div>
         </AccordionSection>
-        <section id="Adverticement">
-          <a href="#">
-            <img
-              src="/assets/images/backgrounds/adverticement.png"
-              alt="icon"
-            />
-          </a>
-        </section>
       </div>
       <nav className="fixed bottom-5 left-0 right-0 z-30 mx-auto w-full">
         <div className="mx-auto max-w-[640px] px-5">
