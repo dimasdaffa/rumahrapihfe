@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { CartItem, HomeService } from "../types/type";
 import apiClient from "../services/apiServices";
 import { Link } from "react-router-dom";
+import AccordionSection from "../components/AccordionSection";
 
 export default function MyCartPage() {
   const [serviceDetails, setServiceDetails] = useState<HomeService[]>([]); // Assuming HomeService is defined.
@@ -11,13 +12,13 @@ export default function MyCartPage() {
 
   const [isScrolled, setIsScrolled] = useState(false); // Track if the user has scrolled
   // useEffect untuk handle scroll event
-useEffect(() => {
+  useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
-  
+
     window.addEventListener("scroll", handleScroll);
-    
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -115,62 +116,52 @@ useEffect(() => {
         />
       </div>
       <section
-  id="NavTop"
-  className={`fixed left-0 right-0 z-30 transition-all duration-300
+        id="NavTop"
+        className={`fixed left-0 right-0 z-30 transition-all duration-300
     ${isScrolled ? "top-[30px]" : "top-[16px]"}`}
->
-  <div className="relative mx-auto max-w-[640px] px-5">
-    <div
-      id="ContainerNav"
-      className={`relative flex h-[68px] items-center justify-center transition-all duration-300
+      >
+        <div className="relative mx-auto max-w-[640px] px-5">
+          <div
+            id="ContainerNav"
+            className={`relative flex h-[68px] items-center justify-center transition-all duration-300
         ${
           isScrolled
             ? "bg-white rounded-[22px] px-[16px] shadow-[0px_12px_20px_0px_#0305041C]"
             : ""
         }`}
-    >
-      <Link
-        to={"/"}
-        id="BackA"
-        className="absolute left-0 transition-all duration-300"
-      >
-        <div
-          id="Back"
-          className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white
+          >
+            <Link
+              to={"/"}
+              id="BackA"
+              className="absolute left-0 transition-all duration-300"
+            >
+              <div
+                id="Back"
+                className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white
             ${isScrolled ? "border border-rumahrapih-graylight" : ""}`}
-        >
-          <img
-            src="/assets/images/icons/back.svg"
-            alt="icon"
-            className="h-[22px] w-[22px] shrink-0"
-          />
-        </div>
-      </Link>
-      <h1
-        id="Title"
-        className={`font-semibold transition-all duration-300
+              >
+                <img
+                  src="/assets/images/icons/back.svg"
+                  alt="icon"
+                  className="h-[22px] w-[22px] shrink-0"
+                />
+              </div>
+            </Link>
+            <h1
+              id="Title"
+              className={`font-semibold transition-all duration-300
           ${isScrolled ? "" : "text-white"}`}
-      >
-        My Cart
-      </h1>
-    </div>
-  </div>
-</section>
-      <div className="relative flex flex-col gap-[20px] px-5 pt-[100px]">
-        <section
-          id="HomeServices"
-          className="flex flex-col gap-4 rounded-3xl border border-rumahrapih-graylight bg-white px-[14px] py-[14px]"
-        >
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Home Services</h2>
-            <button type="button" data-expand="HomeServicesJ">
-              <img
-                src="/assets/images/icons/bottom-booking-form.svg"
-                alt="icon"
-                className="h-[32px] w-[32px] shrink-0 transition-all duration-300"
-              />
-            </button>
+            >
+              My Cart
+            </h1>
           </div>
+        </div>
+      </section>
+      <div className="relative flex flex-col gap-[20px] px-5 pt-[100px]">
+        <AccordionSection
+          title="Home Services"
+          iconSrc="/assets/images/icons/bottom-booking-form.svg"
+        >
           <div className="flex flex-col gap-4" id="HomeServicesJ">
             {serviceDetails.length > 0
               ? serviceDetails.map((service, index) => (
@@ -231,21 +222,11 @@ useEffect(() => {
                 ))
               : " Not available yet"}
           </div>
-        </section>
-        <section
-          id="BookingDetails"
-          className="flex flex-col gap-4 rounded-3xl border border-rumahrapih-graylight bg-white px-[14px] py-[14px]"
+        </AccordionSection>
+        <AccordionSection
+          title="Booking Details"
+          iconSrc="/assets/images/icons/bottom-booking-form.svg"
         >
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Booking Details</h2>
-            <button type="button" data-expand="BookingDetailsJ">
-              <img
-                src="/assets/images/icons/bottom-booking-form.svg"
-                alt="icon"
-                className="h-[32px] w-[32px] shrink-0 transition-all duration-300"
-              />
-            </button>
-          </div>
           <div className="flex flex-col gap-4" id="BookingDetailsJ">
             <div className="flex justify-between">
               <div className="flex items-center gap-[10px]">
@@ -297,7 +278,7 @@ useEffect(() => {
               <strong className="font-semibold">Free for All</strong>
             </div> */}
           </div>
-        </section>
+          </AccordionSection>
         <section id="Adverticement">
           <a href="#">
             <img
